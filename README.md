@@ -1,5 +1,5 @@
 # DroidOneX
-Ps1 Android emulator best we have
+A customizable PlayStation 1 emulator project for Android, focused on performance, controller support, and retro gaming.
 
 🎮 DroidOneX — Relive the Classics
 
