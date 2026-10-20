@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DroidOneX — Emulador de PlayStation 1</title>
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f4f6fb;--surface:#ffffff;--text:#0f1424;--muted:#566080;--line:#dfe4f1;
+  --accent:#3b5bff;--accent2:#00b7d6;--tri:#12a37a;--cir:#e5484d;--crs:#3b5bff;--sq:#d6409f;
+  --glow:rgba(59,91,255,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#070a14;--surface:#0f1424;--text:#eef1fb;--muted:#9aa4c7;--line:#1f2745;
+    --accent:#6f86ff;--accent2:#27d3f0;--tri:#2ee6a6;--cir:#ff6b72;--crs:#6f86ff;--sq:#ff6fc3;
+    --glow:rgba(111,134,255,.28);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#070a14;--surface:#0f1424;--text:#eef1fb;--muted:#9aa4c7;--line:#1f2745;
+  --accent:#6f86ff;--accent2:#27d3f0;--tri:#2ee6a6;--cir:#ff6b72;--crs:#6f86ff;--sq:#ff6fc3;
+  --glow:rgba(111,134,255,.28);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:800;letter-spacing:-.02em;font-size:1.15rem;display:flex;align-items:center;gap:10px}
+.logo i{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-style:normal;font-size:.9rem}
+nav .links{display:flex;gap:22px;font-size:.92rem;color:var(--muted)}
+nav .links a:hover{color:var(--text)}
+@media(max-width:640px){nav .links{display:none}}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glow)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:0}
+.hero{position:relative;text-align:center;padding:84px 0 72px;overflow:hidden}
+.hero::before{content:"";position:absolute;left:50%;top:-120px;width:760px;height:760px;transform:translateX(-50%);background:radial-gradient(circle,var(--glow),transparent 62%);pointer-events:none}
+.badge{display:inline-block;font-size:.8rem;padding:6px 14px;border:1px solid var(--line);border-radius:99px;color:var(--muted);background:var(--surface)}
+h1{font-size:clamp(2.6rem,9vw,5rem);line-height:1.02;letter-spacing:-.04em;margin:22px 0 16px;font-weight:900}
+h1 span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{max-width:600px;margin:0 auto 32px;color:var(--muted);font-size:1.1rem}
+.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.pad{display:flex;gap:18px;justify-content:center;margin-top:56px;position:relative}
+.sym{width:58px;height:58px;border-radius:50%;border:2px solid currentColor;display:grid;place-items:center;font-size:1.5rem;font-weight:800;background:var(--surface);animation:fl 4s ease-in-out infinite}
+.sym:nth-child(1){color:var(--tri)}.sym:nth-child(2){color:var(--cir);animation-delay:.4s}
+.sym:nth-child(3){color:var(--crs);animation-delay:.8s}.sym:nth-child(4){color:var(--sq);animation-delay:1.2s}
+@keyframes fl{50%{transform:translateY(-10px)}}
+@media(prefers-reduced-motion:reduce){.sym{animation:none}html{scroll-behavior:auto}}
+section{padding:64px 0}
+h2{font-size:clamp(1.7rem,5vw,2.3rem);letter-spacing:-.03em;margin:0 0 10px}
+.sub{color:var(--muted);margin:0 0 36px;max-width:560px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.card b{display:block;font-size:1.05rem;margin:12px 0 6px}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.ico{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:1.2rem;background:var(--glow)}
+.steps{counter-reset:s;display:grid;gap:14px}
+.step{display:flex;gap:16px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.step::before{counter-increment:s;content:counter(s);flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.step b{display:block}.step span{color:var(--muted);font-size:.95rem}
+.code{margin-top:18px;background:#0b1020;color:#cfe0ff;border-radius:14px;padding:16px 18px;font:.88rem/1.6 ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;white-space:pre}
+.legal{border:1px solid var(--line);border-left:4px solid var(--cir);background:var(--surface);border-radius:14px;padding:20px;color:var(--muted);font-size:.95rem}
+.legal b{color:var(--text)}
+.final{text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:26px;padding:56px 24px}
+.final h2{color:#fff}.final p{opacity:.9;margin:0 auto 26px;max-width:480px}
+.final .btn{background:#fff;color:#0f1424;border:0}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:99px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));margin-bottom:4px}
+.fn{margin:12px 0 16px;font:.78rem ui-monospace,Menlo,Consolas,monospace;color:var(--muted);word-break:break-all}
+.tip{margin-top:16px;border-left-color:var(--accent)}
+footer{padding:36px 0;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a href="#" class="logo"><i>▶</i>DroidOneX</a>
+  <div class="links"><a href="#recursos">Recursos</a><a href="#download">Download</a><a href="#requisitos">Requisitos</a><a href="#como">Como usar</a><a href="#aviso">Aviso legal</a></div>
+  <a class="btn" href="https://github.com/sigmadabahia676169-sketch/DroidOneX" target="_blank" rel="noopener">GitHub</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span class="badge">🇧🇷 Emulador de PlayStation 1 para Android · v0.1.0</span>
+  <h1>Os clássicos do PS1,<br><span>no seu bolso.</span></h1>
+  <p class="lead">DroidOneX traz os clássicos do PlayStation de volta ao seu Android. Baseado no DuckStation e feito por um desenvolvedor brasileiro independente: um jogo de cada vez.</p>
+  <div class="cta">
+    <a class="btn primary" href="#download">Baixar APK</a>
+    <a class="btn" href="https://github.com/sigmadabahia676169-sketch/DroidOneX" target="_blank" rel="noopener">Ver no GitHub</a>
+  </div>
+  <div class="pad" aria-hidden="true"><div class="sym">△</div><div class="sym">○</div><div class="sym">✕</div><div class="sym">□</div></div>
+</div></header>
+
+<section id="recursos"><div class="wrap">
+  <h2>Feito para jogar</h2>
+  <p class="sub">Tudo o que importa para reviver seus jogos favoritos de PS1.</p>
+  <div class="grid">
+    <div class="card"><div class="ico">🦆</div><b>Motor DuckStation</b><p>Construído sobre o DuckStation, emulador de PS1 focado em velocidade e jogabilidade.</p></div>
+    <div class="card"><div class="ico">🎨</div><b>Vulkan e OpenGL ES 3.0</b><p>Escolha o renderizador ideal para o seu aparelho.</p></div>
+    <div class="card"><div class="ico">🔍</div><b>Resolução interna ajustável</b><p>Do 1x nativo a resoluções maiores, se o seu celular aguentar.</p></div>
+    <div class="card"><div class="ico">📱</div><b>ARM 32, ARM 64 e x86_64</b><p>Um APK para cada arquitetura. Em 64 bits, o desempenho é bem melhor.</p></div>
+    <div class="card"><div class="ico">🗜️</div><b>Conversor integrado</b><p>Converta seus jogos para economizar espaço de armazenamento.</p></div>
+    <div class="card"><div class="ico">🇧🇷</div><b>Feito no Brasil</b><p>Projeto independente, movido pela paixão pelos clássicos do PlayStation.</p></div>
+  </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <h2>Download <small style="color:var(--muted);font-weight:500">v0.1.0</small></h2>
+  <p class="sub">Escolha o APK de acordo com o processador do seu aparelho.</p>
+  <div class="grid">
+    <div class="card"><span class="tag">Recomendado</span><b>arm64-v8a</b><p>A maioria dos celulares e tablets atuais (64 bits).</p><div class="fn">DroidOneX-0_1_0-arm64-v8a.apk</div><a class="btn primary" href="https://github.com/sigmadabahia676169-sketch/DroidOneX/releases" target="_blank" rel="noopener">Baixar</a></div>
+    <div class="card"><b>armeabi-v7a</b><p>Aparelhos antigos de 32 bits. Exige processador mais rápido.</p><div class="fn">DroidOneX-0_1_0-armeabi-v7a.apk</div><a class="btn" href="https://github.com/sigmadabahia676169-sketch/DroidOneX/releases" target="_blank" rel="noopener">Baixar</a></div>
+    <div class="card"><b>x86_64</b><p>Emuladores Android, Chromebooks e dispositivos com CPU x86.</p><div class="fn">DroidOneX-0_1_0-x86_64.apk</div><a class="btn" href="https://github.com/sigmadabahia676169-sketch/DroidOneX/releases" target="_blank" rel="noopener">Baixar</a></div>
+  </div>
+</div></section>
+
+<section id="requisitos"><div class="wrap">
+  <h2>Requisitos mínimos</h2>
+  <p class="sub">Para rodar sem engasgos.</p>
+  <div class="grid">
+    <div class="card"><b>Sistema</b><p>Android 7.0 (Nougat) ou superior.</p></div>
+    <div class="card"><b>Processador</b><p>1,5 GHz no mínimo. ARMv7, AArch64 ou x86_64. Prefira 64 bits.</p></div>
+    <div class="card"><b>Memória</b><p>Pelo menos 2 GB de RAM.</p></div>
+    <div class="card"><b>Gráficos</b><p>Suporte a OpenGL ES 3.0 ou Vulkan.</p></div>
+  </div>
+  <div class="legal tip"><b>💡 Dica de desempenho.</b> Se o seu aparelho está perto do mínimo, use o renderizador Vulkan (se disponível) nas configurações de vídeo do DuckStation e mantenha a resolução interna em 1x. Resolução 2x ou maior, 4K e filtros pesados pedem um aparelho bem mais potente.</div>
+</div></section>
+
+<section id="como"><div class="wrap">
+  <h2>Como começar</h2>
+  <p class="sub">Três passos e você está jogando.</p>
+  <div class="steps">
+    <div class="step"><div><b>Baixe o APK certo</b><span>Para a maioria dos celulares atuais, é o arm64-v8a. Permita a instalação de apps de fontes externas.</span></div></div>
+    <div class="step"><div><b>Adicione sua BIOS</b><span>Use a BIOS extraída do seu próprio PlayStation.</span></div></div>
+    <div class="step"><div><b>Carregue seu jogo</b><span>Abra a imagem do disco que você mesmo possui e divirta-se.</span></div></div>
+  </div>
+  
+</div></section>
+
+<section id="aviso"><div class="wrap">
+  <div class="legal"><b>Créditos e aviso legal.</b> O DroidOneX é baseado no DuckStation. O DuckStation e seus colaboradores mantêm os direitos sobre o trabalho original, e componentes de terceiros seguem suas respectivas licenças. O DroidOneX não inclui jogos nem BIOS: você é responsável por obter e usar imagens de jogos, BIOS e outros arquivos de forma legal. O projeto é voltado à emulação lícita e à preservação pessoal. PlayStation é marca registrada da Sony Interactive Entertainment; este projeto não tem vínculo com a Sony.</div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="final">
+    <h2>Quer saber mais?</h2>
+    <p>Obrigado por apoiar o DroidOneX e ajudar a manter vivo o espírito do retrogaming. ❤️🎮</p>
+    <a class="btn" href="https://github.com/sigmadabahia676169-sketch/DroidOneX" target="_blank" rel="noopener">Abrir no GitHub →</a>
+  </div>
+</div></section>
+
+<footer>© 2026 DroidOneX · Feito no Brasil 🇧🇷 com paixão por retrogames · Baseado no DuckStation</footer>
+</body>
+</html>
